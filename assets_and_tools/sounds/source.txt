@@ -1,0 +1,4 @@
+http://freesound.org/people/moca/sounds/48719/ intro_loop.mp3
+http://freesound.org/people/datwilightz/sounds/193570/ game_loop.mp3
+
+The rest of the sounds where generated.
