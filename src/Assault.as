@@ -15,6 +15,7 @@ package
 		
 		public var coreAssault:MovieClip;
 		public var damage:Number;
+		public var stall:Number;
 		public var targetWorld:ConflictWorld;
 		public var targetSpot:Point;
 		
@@ -24,10 +25,11 @@ package
 		public var missed:Signal;
 		public var blocked:Signal;
 		
-		public function Assault(coreAssault:MovieClip, damage:Number, targetWorld:ConflictWorld, targetSpot:Point, explosionSound:Sound ) 
+		public function Assault(coreAssault:MovieClip, damage:Number, stall:Number, targetWorld:ConflictWorld, targetSpot:Point, explosionSound:Sound ) 
 		{
 			this.coreAssault = coreAssault;
 			this.damage = damage;
+			this.stall = stall;
 			this.targetWorld = targetWorld;
 			this.targetSpot = targetSpot;
 			this.explosionSound = explosionSound;

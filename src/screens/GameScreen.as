@@ -4,6 +4,7 @@ package screens
 	import flash.display.Sprite;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
+	import flash.media.SoundChannel;
 	import interfaces.IScriptable;
 	import org.osflash.signals.Signal;
 	/**
@@ -27,6 +28,7 @@ package screens
 		protected var _assaults:Vector.<Assault>;
 		
 		// sound
+		protected var _musicLoop:GameLoopSound;
 		protected var _smallExplosionSound:ExplosionSmall;
 		protected var _bigExplosionSound:ExplosionBig;
 		protected var _winSound:VictorySound;
@@ -34,6 +36,8 @@ package screens
 		protected var _screamSound:ScreamSound;
 		protected var _blockSound:BlockSound;
 		protected var _shootSound:ShootSound;
+		
+		protected var _musicChannel:SoundChannel;
 		
 		public var win:Signal;
 		public var lose:Signal;
@@ -58,6 +62,7 @@ package screens
 			
 			_assaults = new Vector.<Assault>();
 			
+			_musicLoop = new GameLoopSound();
 			_smallExplosionSound = new ExplosionSmall();
 			_bigExplosionSound = new ExplosionBig();
 			_winSound = new VictorySound();
@@ -90,6 +95,7 @@ package screens
 			_otherEnemy.assault.add(launchOtherEnemyAssault);
 			_otherEnemy.destroyed.add(onWorldDestroyed);
 			
+			_musicChannel = _musicLoop.play(0, 9999);
 			// DEBUG
 			//addChild(debugSprite);
 		}
@@ -115,6 +121,8 @@ package screens
 				_assaults[i].dispose();
 			}
 			_assaults.splice(0, _assaults.length);
+			
+			_musicChannel.stop();
 		}
 		
 		public function update():void
@@ -176,7 +184,7 @@ package screens
 				Math.random() * _otherEnemy.width + _otherEnemy.x, 
 				Math.random() * _otherEnemy.height + _otherEnemy.y - _otherEnemy.height*0.5);
 			
-			var assault:Assault = new Assault(new CoreEnemyAssault(),Settings.ENEMY_DAMAGE,_otherEnemy, targetSpot, _smallExplosionSound);
+			var assault:Assault = new Assault(new CoreEnemyAssault(),Settings.ENEMY_DAMAGE,Settings.ENEMY_STALL,_otherEnemy, targetSpot, _smallExplosionSound);
 			
 			initializeAssault(assault,localPosition);
 		}
@@ -189,7 +197,7 @@ package screens
 				Math.random() * _enemy.width + enemy.x - _enemy.width, 
 				Math.random() * _enemy.height + _enemy.y - _enemy.height*0.5);
 			
-			var assault:Assault = new Assault(new CoreOtherenemyAssault(),Settings.OTHERENEMY_DAMAGE,_enemy, targetSpot, _bigExplosionSound);
+			var assault:Assault = new Assault(new CoreOtherenemyAssault(),Settings.OTHERENEMY_DAMAGE,Settings.OTHERENEMY_STALL,_enemy, targetSpot, _bigExplosionSound);
 
 			initializeAssault(assault, localPosition);
 		}
@@ -224,6 +232,10 @@ package screens
 			// Make damage
 			assault.targetWorld.health -= assault.damage;
 			
+			
+			// Pull back
+			understanding -= assault.stall;
+			
 			// Add casualties
 			casualties += int(Math.random()*Math.round(assault.damage*Settings.POPULATION));
 			
@@ -231,6 +243,12 @@ package screens
 			
 			// PLAY_SOUND
 			assault.explosionSound.play();
+			
+			// Add grave
+			if (Math.random() > 0.7) {
+				assault.targetWorld.addGrave();
+				_screamSound.play();
+			}
 			
 			// SHAKE CAMERA
 		}

@@ -24,6 +24,8 @@ package
 		public var healthBar:HealthBar;
 		public var coreWorld:MovieClip;
 		
+		protected var _graves:Vector.<CoreGrave>;
+		
 		public var assault:Signal;
 		public var destroyed:Signal;
 		
@@ -35,6 +37,8 @@ package
 			healthBar = bar;
 			
 			_outposts = new Vector.<ConflictOutpost>();
+			
+			_graves = new Vector.<CoreGrave>();
 			
 			assault = new Signal();
 			destroyed = new Signal();
@@ -56,6 +60,12 @@ package
 				_outposts[i].dispose();
 			}
 			_outposts.splice(0, numOutposts);
+			
+			for (i = 0; i < _graves.length; i++) {
+				if (coreWorld.background.contains(_graves[i]))
+					coreWorld.background.removeChild(_graves[i]);
+			}
+			_graves.splice(0,_graves.length);
 			
 			assault.removeAll();
 			destroyed.removeAll();
@@ -101,6 +111,17 @@ package
 		public function get numOutposts():int
 		{
 			return _outposts.length;
+		}
+		
+		public function addGrave():void
+		{
+			var grave:CoreGrave = new CoreGrave();
+			grave.x = Math.random() * coreWorld.background.width;
+			grave.y = Math.random() * coreWorld.background.height;
+			
+			_graves.push(grave);
+			
+			coreWorld.background.addChild(grave);
 		}
 		
 		public function get x():Number
